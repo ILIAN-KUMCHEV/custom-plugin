@@ -114,3 +114,38 @@ function update_custom_fields() {
 }
 
 add_action( 'save_post', 'update_custom_fields' );
+
+// =============Create custom json endpoint ========
+ 
+function register_api_endpoints() {
+  register_rest_route('custom', '/endpoint', array(
+    'methods' => 'GET',
+    'callback' => 'get_post_items',
+  ) );
+}
+ 
+add_action( 'rest_api_init', 'register_api_endpoints' );
+
+
+function get_post_items() {
+  global $wpdb;
+  $db=$wpdb->prefix . "mytable";
+  $newtext=$wpdb -> get_var("SELECT `value` FROM $db");   
+    
+  $args = array (
+    'post_status' => 'publish'
+  );
+ 
+  $items = array();
+  if ( $posts = get_posts( $args ) ) {
+    foreach ( $posts as $post ) {
+         
+      $items[] = array(
+        'id' => $post->ID,
+        'title' => $post->post_title,
+        'myfield' =>$newtext
+      );
+    }
+  }
+  return $items;
+}
