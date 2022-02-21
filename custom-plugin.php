@@ -92,3 +92,25 @@ function save_custom_fields() {
 
 }
 add_action( 'save_post', 'save_custom_fields' );
+
+
+// =============Update metabox value to the new created table when its changed via wp backend of the post========
+function update_custom_fields() {
+    $ids=get_the_id();
+    $text=$_POST['custom_text'];
+    $fieldname='Custom Text';
+    
+    global $wpdb;
+    $wpdb -> update(
+       $wpdb->prefix . "mytable",
+    [ 
+        'value'=>$text
+        ],
+     [
+        'id'=>$ids
+    
+        ]   
+        );
+}
+
+add_action( 'save_post', 'update_custom_fields' );
